@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/api/v1/calculate"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\"freePremiumRoms\":2,\"freeEconomyRooms\":3,\"usedPremiumRooms\":0,\"incomeFromPremiumRooms\":0,\"usedEconomyRooms\":0,\"incomeFromEconomyRooms\":0}"
+  }
+}

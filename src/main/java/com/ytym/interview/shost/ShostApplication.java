@@ -1,4 +1,4 @@
-package com.ytym.interview.shost.shost;
+package com.ytym.interview.shost;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
