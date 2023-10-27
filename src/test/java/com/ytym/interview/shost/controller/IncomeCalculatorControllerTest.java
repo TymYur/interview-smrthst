@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.maciejwalkowiak.wiremock.spring.ConfigureWireMock;
 import com.maciejwalkowiak.wiremock.spring.EnableWireMock;
 import com.maciejwalkowiak.wiremock.spring.InjectWireMock;
-import com.ytym.interview.shost.controller.dto.ResultOfCalculation;
+import com.ytym.interview.shost.dto.IncomeCalculatorDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -39,7 +39,7 @@ class IncomeCalculatorControllerTest {
     public void testCalculateIncomeForValidPremiumAndEconomyRoomsValues(int premiumRoomsNumber, int economyRoomsNumber) {
 
         //Make a request to your controller using RestTemplate
-        ResultOfCalculation result = restTemplate.getForObject(byUrl(premiumRoomsNumber, economyRoomsNumber), ResultOfCalculation.class);
+        IncomeCalculatorDto result = restTemplate.getForObject(byUrl(premiumRoomsNumber, economyRoomsNumber), IncomeCalculatorDto.class);
 
         // Verify the response
         assertThat(result.freePremiumRooms()).isEqualTo(premiumRoomsNumber);

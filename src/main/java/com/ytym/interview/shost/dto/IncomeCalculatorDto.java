@@ -1,6 +1,6 @@
-package com.ytym.interview.shost.controller.dto;
+package com.ytym.interview.shost.dto;
 
-public record ResultOfCalculation(Integer freePremiumRooms,
+public record IncomeCalculatorDto(Integer freePremiumRooms,
                                   Integer freeEconomyRooms,
                                   Integer usedPremiumRooms,
                                   Integer incomeFromPremiumRooms,

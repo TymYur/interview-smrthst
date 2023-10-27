@@ -1,6 +1,7 @@
 package com.ytym.interview.shost.controller;
 
-import com.ytym.interview.shost.controller.dto.ResultOfCalculation;
+import com.ytym.interview.shost.dto.IncomeCalculatorDto;
+import com.ytym.interview.shost.service.IncomeCalculatorService;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -19,21 +20,26 @@ import java.util.List;
 @RestController
 @Validated
 public class IncomeCalculatorController {
+    private final
+    IncomeCalculatorService incomeCalculatorService;
+
+    public IncomeCalculatorController(IncomeCalculatorService incomeCalculatorService) {
+        this.incomeCalculatorService = incomeCalculatorService;
+    }
 
     @PutMapping()
     void loadDataToCalculateOn(@NotNull @NotEmpty @Positive @Size(min = 1) @RequestBody List<Integer> paymentsListForAnalysis) {
-
+        incomeCalculatorService.saveInputData(paymentsListForAnalysis);
     }
 
     @GetMapping()
-    public ResultOfCalculation calculateIncomeFor(@RequestParam("premium") @NotNull(message = "amount of premium rooms must be present") @Positive(message = "amount of premium rooms must be greater than 0") Integer premiumRoomNumber,
-                                           @RequestParam("economy") @NotNull @Positive(message = "amount of economy rooms must be greater than 0")  Integer economyRoomNumber) {
-        return new ResultOfCalculation(premiumRoomNumber,
-                economyRoomNumber,
-                0,
-                0,
-                0,
-                0);
-
+    public IncomeCalculatorDto calculateIncomeFor(
+            @RequestParam("premium")
+            @NotNull(message = "amount of premium rooms must be present")
+            @Positive(message = "amount of premium rooms must be greater than 0") Integer premiumRoomNumber,
+            @RequestParam("economy")
+            @NotNull(message = "amount of economy rooms must be present")
+            @Positive(message = "amount of economy rooms must be greater than 0")  Integer economyRoomNumber) {
+        return incomeCalculatorService.calculateIncomeFor(premiumRoomNumber, economyRoomNumber);
     }
 }
