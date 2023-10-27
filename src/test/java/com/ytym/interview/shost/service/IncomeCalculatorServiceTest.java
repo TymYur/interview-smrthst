@@ -11,27 +11,27 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class IncomeCalculatorServiceTest {
+
     private final IncomeCalculatorService incomeCalculatorService = new IncomeCalculatorService();
-    private List<Integer> input = List.of(23, 45, 155, 374, 22, 99, 100, 101, 115, 209);;
+
+    private final List<Integer> inputDataForTests = List.of(23, 45, 155, 374, 22, 99, 100, 101, 115, 209);
 
     @Test
     void testStoreData() {
-        incomeCalculatorService.saveInputData(input);
+        incomeCalculatorService.saveInputDataForAnalysis(inputDataForTests);
     }
-
 
     @ParameterizedTest
     @MethodSource("provideTestParameters")
-    void testCalculateData(int premiumRoomsNumber, int economyRoomsNumber, int premiumRoomsUsedNumber, int economyRoomsUsedNumber, int premiumRoomsSum, int economyRoomsSum) {
+    void testCalculateData(int premiumRoomsRequested, int economyRoomsRequested, int premiumRoomsUsed, int economyRoomsUsed, int premiumRoomsIncome, int economyRoomsIncome) {
 
-        incomeCalculatorService.saveInputData(input);
+        incomeCalculatorService.saveInputDataForAnalysis(inputDataForTests);
 
-
-        CalculationResults results = incomeCalculatorService.proceedCalculations(premiumRoomsNumber, economyRoomsNumber);
-        assertThat(results.premiumCount()).isEqualTo(premiumRoomsUsedNumber);
-        assertThat(results.premiumSum()).isEqualTo(premiumRoomsSum);
-        assertThat(results.economyCount()).isEqualTo(economyRoomsUsedNumber);
-        assertThat(results.economySum()).isEqualTo(economyRoomsSum);
+        TemporaryCalculationResults results = incomeCalculatorService.analyseInputDataFor(premiumRoomsRequested, economyRoomsRequested);
+        assertThat(results.premiumRoomCount()).isEqualTo(premiumRoomsUsed);
+        assertThat(results.premiumRoomIncome()).isEqualTo(premiumRoomsIncome);
+        assertThat(results.economyRoomCount()).isEqualTo(economyRoomsUsed);
+        assertThat(results.economyRoomIncome()).isEqualTo(economyRoomsIncome);
     }
 
     private static Stream<Arguments> provideTestParameters() {

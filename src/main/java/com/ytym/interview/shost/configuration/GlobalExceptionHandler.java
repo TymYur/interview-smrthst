@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,36 +22,46 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({ConstraintViolationException.class})
     @ResponseBody
-    public ResponseEntity<Object> handleValidationExceptions(
+    public ResponseEntity<Object> handleViolationExceptions(
             ConstraintViolationException ex, WebRequest request) {
 
-        ProblemDetail detail = buildProblemDetail(HttpStatus.BAD_REQUEST, request, ex.getMessage());
+        ProblemDetail detail = buildProblemDetail(request, ex.getMessage());
         return ResponseEntity.of(detail).build();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({MissingServletRequestParameterException.class})
     @ResponseBody
-    public ResponseEntity<Object> handleValidationExceptionsForMissedParams(
+    public ResponseEntity<Object> handleMissedParamsExceptions(
             MissingServletRequestParameterException ex, WebRequest request) {
 
-        ProblemDetail detail = buildProblemDetail(HttpStatus.BAD_REQUEST, request, ex.getMessage());
+        ProblemDetail detail = buildProblemDetail(request, ex.getMessage());
         return ResponseEntity.of(detail).build();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})
     @ResponseBody
-    public ResponseEntity<Object> handleValidationExceptionsForMissedParams(
+    public ResponseEntity<Object> handleWrongTypeForParamsExceptions(
             MethodArgumentTypeMismatchException ex, WebRequest request) {
 
-        ProblemDetail detail = buildProblemDetail(HttpStatus.BAD_REQUEST, request, ex.getMessage());
+        ProblemDetail detail = buildProblemDetail(request, ex.getMessage());
+        return ResponseEntity.of(detail).build();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({HttpMessageNotReadableException.class})
+    @ResponseBody
+    public ResponseEntity<Object> handleWrongFormatOfDataInputExceptions(
+            HttpMessageNotReadableException ex, WebRequest request) {
+
+        ProblemDetail detail = buildProblemDetail(request, ex.getMessage());
         return ResponseEntity.of(detail).build();
     }
 
     private ProblemDetail buildProblemDetail(
-            HttpStatus status, WebRequest request, String errorMessage) {
-        ProblemDetail detail = ProblemDetail.forStatusAndDetail(status, errorMessage);
+            WebRequest request, String errorMessage) {
+        ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, errorMessage);
         detail.setInstance(URI.create(((ServletWebRequest) request).getRequest().getRequestURI()));
         return detail;
     }

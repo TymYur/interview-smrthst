@@ -1,6 +1,6 @@
 package com.ytym.interview.shost.service;
 
-import com.ytym.interview.shost.dto.IncomeCalculatorDto;
+import com.ytym.interview.shost.dto.IncomeCalculatorResultsDto;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -11,18 +11,17 @@ import java.util.stream.Collectors;
 public class IncomeCalculatorService {
     private List<Integer> paymentsListForAnalysis;
 
-    private final int premiumLimit = 100;
+    private final int premiumPaymentLimitStart = 100;
 
-    public void saveInputData(List<Integer> paymentsList) {
+    public void saveInputDataForAnalysis(List<Integer> paymentsList) {
         paymentsListForAnalysis = Collections.unmodifiableList(paymentsList);
     }
 
-    public IncomeCalculatorDto calculateIncomeFor(int premiumRoomNumber, int economyRoomNumber) {
-        CalculationResults results = proceedCalculations(premiumRoomNumber, economyRoomNumber);
+    public IncomeCalculatorResultsDto calculateIncomeFor(int premiumRoomNumberRequested, int economyRoomNumberRequested) {
+        TemporaryCalculationResults results = analyseInputDataFor(premiumRoomNumberRequested, economyRoomNumberRequested);
 
-
-        return new IncomeCalculatorDto(premiumRoomNumber,
-                economyRoomNumber,
+        return new IncomeCalculatorResultsDto(premiumRoomNumberRequested,
+                economyRoomNumberRequested,
                 0,
                 0,
                 0,
@@ -30,33 +29,30 @@ public class IncomeCalculatorService {
     }
 
 
-    CalculationResults proceedCalculations(int premiumRoomNumber, int economyRoomNumber) {
-        CalculationResults results = paymentsListForAnalysis.stream()
+    TemporaryCalculationResults analyseInputDataFor(int premiumRoomRequested, int economyRoomRequested) {
+        return paymentsListForAnalysis.stream()
                 .sorted(Collections.reverseOrder())
                 .collect(Collectors.collectingAndThen(
-                        Collectors.partitioningBy(v -> v < premiumLimit),
+                        Collectors.partitioningBy(payment -> payment < premiumPaymentLimitStart),
                         partitions -> {
-                            List<Integer> economyPartition = partitions.get(true);
-                            List<Integer> premiumPartition = partitions.get(false);
+                            List<Integer> economyRoomPayments = partitions.get(true);
+                            List<Integer> premiumRoomPayments = partitions.get(false);
 
-                            int economySum = economyPartition.stream()
-                                    .limit(economyRoomNumber)
-                                    .collect(Collectors.summingInt(Integer::intValue));
+                            int economyRoomIncome = economyRoomPayments.stream()
+                                    .limit(economyRoomRequested).mapToInt(Integer::intValue).sum();
 
-                            int premiumSum = premiumPartition.stream()
-                                    .limit(premiumRoomNumber)
-                                    .collect(Collectors.summingInt(Integer::intValue));
+                            int premiumRoomIncome = premiumRoomPayments.stream()
+                                    .limit(premiumRoomRequested).mapToInt(Integer::intValue).sum();
 
-                            int economyExistingNumber = economyPartition.size();
-                            int premiumExistingNumber = premiumPartition.size();
+                            int economyRoomExistsByPaymentsNumber = economyRoomPayments.size();
+                            int premiumRoomExistsByPaymentsNumber = premiumRoomPayments.size();
 
-                            int economyUsedNumber = Math.min(economyExistingNumber, economyRoomNumber);
-                            int premiumUsedNumber = Math.min(premiumExistingNumber, premiumRoomNumber);
+                            int economyRoomUsed = Math.min(economyRoomExistsByPaymentsNumber, economyRoomRequested);
+                            int premiumRoomUsed = Math.min(premiumRoomExistsByPaymentsNumber, premiumRoomRequested);
 
-                            return new CalculationResults(premiumPartition, premiumSum, premiumUsedNumber, economyPartition, economySum, economyUsedNumber);
+                            return new TemporaryCalculationResults(premiumRoomPayments, premiumRoomIncome, premiumRoomUsed, economyRoomPayments, economyRoomIncome, economyRoomUsed);
                         }
                 ));
-        return results;
     }
 }
 
