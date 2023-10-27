@@ -114,11 +114,11 @@
                         <version>${maven.jjb.plugin.version}</version>
                         <configuration>
                             <to>
-                                <image>tests/gsg-${project.artifactId}:${project.version}</image>
+                                <image>interviews/smrthst-${project.artifactId}:${project.version}</image>
                             </to>
                             <container>
                                 <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
-                                <mainClass>com.tym.test.de.gsg.calculator.CalculationApplication</mainClass>
+                                <mainClass>com.ytym.interview.shost.ShostApplication</mainClass>
                             </container>
                         </configuration>
                         <executions>
