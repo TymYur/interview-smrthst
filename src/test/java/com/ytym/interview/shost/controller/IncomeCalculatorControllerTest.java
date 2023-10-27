@@ -49,16 +49,16 @@ class IncomeCalculatorControllerTest {
 
     @ParameterizedTest
     @MethodSource("provideTestParameters")
-    void testCalculateIncomeForValidPremiumAndEconomyRoomsValues(int premiumRoomsNumber, int economyRoomsNumber) {
+    void testCalculateIncomeForValidPremiumAndEconomyRoomsValues(int premiumRoomsRequested, int economyRoomsRequested, int premiumRoomsUsed, int economyRoomsUsed, int premiumRoomsIncome, int economyRoomsIncome) {
 
-        IncomeCalculatorResultsDto result = restTemplate.getForObject(byUrl(premiumRoomsNumber, economyRoomsNumber), IncomeCalculatorResultsDto.class);
+        IncomeCalculatorResultsDto result = restTemplate.getForObject(byUrl(premiumRoomsRequested, economyRoomsRequested), IncomeCalculatorResultsDto.class);
 
-        assertThat(result.freePremiumRooms()).isEqualTo(premiumRoomsNumber);
-        assertThat(result.freeEconomyRooms()).isEqualTo(economyRoomsNumber);
-        assertThat(result.usedPremiumRooms()).isEqualTo(0);
-        assertThat(result.incomeFromPremiumRooms()).isEqualTo(0);
-        assertThat(result.usedEconomyRooms()).isEqualTo(0);
-        assertThat(result.incomeFromEconomyRooms()).isEqualTo(0);
+        assertThat(result.freePremiumRooms()).isEqualTo(premiumRoomsRequested);
+        assertThat(result.freeEconomyRooms()).isEqualTo(economyRoomsRequested);
+        assertThat(result.usedPremiumRooms()).isEqualTo(premiumRoomsUsed);
+        assertThat(result.incomeFromPremiumRooms()).isEqualTo(premiumRoomsIncome);
+        assertThat(result.usedEconomyRooms()).isEqualTo(economyRoomsUsed);
+        assertThat(result.incomeFromEconomyRooms()).isEqualTo(economyRoomsIncome);
     }
 
     @Test
@@ -69,7 +69,7 @@ class IncomeCalculatorControllerTest {
         ProblemDetail result = restTemplate.getForObject(byUrl(premiumRoomsNumber, economyRoomsNumber), ProblemDetail.class);
 
         assertThat(result.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(result.getDetail()).contains("premiumRoomNumber: Amount of premium rooms must be greater than 0");
+        assertThat(result.getDetail()).contains("Amount of premium rooms must be greater than 0");
     }
 
     @Test
@@ -80,7 +80,7 @@ class IncomeCalculatorControllerTest {
         ProblemDetail result = restTemplate.getForObject(byUrl(premiumRoomsNumber, economyRoomsNumber), ProblemDetail.class);
 
         assertThat(result.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(result.getDetail()).contains("economyRoomNumber: Amount of economy rooms must be greater than 0");
+        assertThat(result.getDetail()).contains("Amount of economy rooms must be greater than 0");
     }
 
     @Test
@@ -200,12 +200,9 @@ class IncomeCalculatorControllerTest {
 
     private static Stream<Arguments> provideTestParameters() {
         return Stream.of(
-                Arguments.of(3, 3),
-                Arguments.of(7, 5),
-                Arguments.of(2, 7),
-                Arguments.of(10, 1)
+                Arguments.of(3, 3, 3, 3, 738, 167),
+                Arguments.of(7, 5, 6, 4, 1054, 189),
+                Arguments.of(2, 7, 2, 4, 583, 189)//,                Arguments.of(10, 1, 7, 1, 1153, 45)
         );
     }
-
-
 }

@@ -22,10 +22,10 @@ public class IncomeCalculatorService {
 
         return new IncomeCalculatorResultsDto(premiumRoomNumberRequested,
                 economyRoomNumberRequested,
-                0,
-                0,
-                0,
-                0);
+                results.premiumRoomCount(),
+                results.premiumRoomIncome(),
+                results.economyRoomCount(),
+                results.economyRoomIncome());
     }
 
 
