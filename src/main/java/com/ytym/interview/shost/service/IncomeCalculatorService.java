@@ -31,38 +31,31 @@ public class IncomeCalculatorService {
 
 
     CalculationResults proceedCalculations(int premiumRoomNumber, int economyRoomNumber) {
-        CalculationResults results = paymentsListForAnalysis.stream().sorted(Collections.reverseOrder())
-                .collect(Collectors.teeing(
+        CalculationResults results = paymentsListForAnalysis.stream()
+                .sorted(Collections.reverseOrder())
+                .collect(Collectors.collectingAndThen(
                         Collectors.partitioningBy(v -> v < premiumLimit),
-                        Collectors.toList(),
-                        (k, t) -> {
-                            Integer economySum = k.get(true).stream().limit(economyRoomNumber).collect(Collectors.summingInt(Integer::intValue));
-                            Integer premiumSum = k.get(false).stream().limit(premiumRoomNumber).collect(Collectors.summingInt(Integer::intValue));
+                        partitions -> {
+                            List<Integer> economyPartition = partitions.get(true);
+                            List<Integer> premiumPartition = partitions.get(false);
 
-                            Integer economyExistingNumber = Math.toIntExact(k.get(true).stream().count());
-                            Integer premiumExistingNumber = Math.toIntExact(k.get(false).stream().count());
+                            int economySum = economyPartition.stream()
+                                    .limit(economyRoomNumber)
+                                    .collect(Collectors.summingInt(Integer::intValue));
 
-                            Integer economyUsedNumber = (economyExistingNumber < economyRoomNumber) ?  economyExistingNumber : economyRoomNumber;
-                            Integer premiumUsedNumber = (premiumExistingNumber < premiumRoomNumber) ?  premiumExistingNumber : premiumRoomNumber;
+                            int premiumSum = premiumPartition.stream()
+                                    .limit(premiumRoomNumber)
+                                    .collect(Collectors.summingInt(Integer::intValue));
 
-                            return new CalculationResults(k.get(false),
-                                    premiumSum,
-                                    premiumUsedNumber,
-                                    k.get(false),
-                                    economySum,
-                                    economyUsedNumber);
-                        }));
-//        Integer premiumSum = groups.get("premiumSum").get(0);
-//        Integer economySum = groups.get("economySum").get(0);
-//        if(groups.get("premiumCount").get(0) < premiumRoomNumber) {
-//
-//            List<Integer> economyList = groups.get("economyList");
-//            Integer premiumSumAddons = economyList.stream().limit(premiumRoomNumber - groups.get("premiumCount").get(0)).collect(Collectors.summingInt(Integer::intValue));
-//
-//            premiumSum+=premiumSumAddons;
-//            economySum=economyList.stream().skip(premiumRoomNumber - groups.get("premiumCount").get(0)).collect(Collectors.summingInt(Integer::intValue));;
-//        }
-        System.out.println(results);
+                            int economyExistingNumber = economyPartition.size();
+                            int premiumExistingNumber = premiumPartition.size();
+
+                            int economyUsedNumber = Math.min(economyExistingNumber, economyRoomNumber);
+                            int premiumUsedNumber = Math.min(premiumExistingNumber, premiumRoomNumber);
+
+                            return new CalculationResults(premiumPartition, premiumSum, premiumUsedNumber, economyPartition, economySum, economyUsedNumber);
+                        }
+                ));
         return results;
     }
 }
