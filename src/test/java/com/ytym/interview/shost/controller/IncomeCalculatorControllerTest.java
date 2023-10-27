@@ -1,9 +1,7 @@
 package com.ytym.interview.shost.controller;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
 import com.maciejwalkowiak.wiremock.spring.ConfigureWireMock;
 import com.maciejwalkowiak.wiremock.spring.EnableWireMock;
-import com.maciejwalkowiak.wiremock.spring.InjectWireMock;
 import com.ytym.interview.shost.dto.IncomeCalculatorResultsDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,9 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
         @ConfigureWireMock(name = "calculator-client", property = "calculator-client.url")
 })
 class IncomeCalculatorControllerTest {
-
-    @InjectWireMock("calculator-client")
-    private WireMockServer calculationService;
 
     @Autowired
     private TestRestTemplate restTemplate;

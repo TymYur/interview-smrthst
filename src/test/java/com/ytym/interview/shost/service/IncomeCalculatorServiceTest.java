@@ -1,5 +1,6 @@
 package com.ytym.interview.shost.service;
 
+import com.ytym.interview.shost.exceptions.CalculationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class IncomeCalculatorServiceTest {
 
@@ -32,6 +34,15 @@ class IncomeCalculatorServiceTest {
         assertThat(results.premiumRoomIncome()).isEqualTo(premiumRoomsIncome);
         assertThat(results.economyRoomCount()).isEqualTo(economyRoomsUsed);
         assertThat(results.economyRoomIncome()).isEqualTo(economyRoomsIncome);
+    }
+
+    @Test
+    void testCalculationWithoutData() {
+        int premiumRoomNumberRequested = 3;
+        int economyRoomNumberRequested = 3;
+
+        assertThatThrownBy(() -> incomeCalculatorService.calculateIncomeFor(premiumRoomNumberRequested, economyRoomNumberRequested)).isInstanceOf(CalculationException.class)
+                .hasMessageContaining("Analysis could not be started - no income data");
     }
 
     private static Stream<Arguments> provideTestParameters() {

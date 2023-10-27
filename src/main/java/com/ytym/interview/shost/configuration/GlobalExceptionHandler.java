@@ -1,5 +1,6 @@
 package com.ytym.interview.shost.configuration;
 
+import com.ytym.interview.shost.exceptions.CalculationException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -54,6 +55,16 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ResponseEntity<Object> handleWrongFormatOfDataInputExceptions(
             HttpMessageNotReadableException ex, WebRequest request) {
+
+        ProblemDetail detail = buildProblemDetail(request, ex.getMessage());
+        return ResponseEntity.of(detail).build();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({CalculationException.class})
+    @ResponseBody
+    public ResponseEntity<Object> handleWrongFormatOfDataInputExceptions(
+            CalculationException ex, WebRequest request) {
 
         ProblemDetail detail = buildProblemDetail(request, ex.getMessage());
         return ResponseEntity.of(detail).build();

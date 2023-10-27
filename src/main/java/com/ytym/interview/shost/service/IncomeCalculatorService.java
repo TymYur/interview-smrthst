@@ -1,6 +1,7 @@
 package com.ytym.interview.shost.service;
 
 import com.ytym.interview.shost.dto.IncomeCalculatorResultsDto;
+import com.ytym.interview.shost.exceptions.CalculationException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -18,6 +19,10 @@ public class IncomeCalculatorService {
     }
 
     public IncomeCalculatorResultsDto calculateIncomeFor(int premiumRoomNumberRequested, int economyRoomNumberRequested) {
+        if (paymentsListForAnalysis == null) {
+            throw new CalculationException();
+        }
+
         TemporaryCalculationResults results = analyseInputDataFor(premiumRoomNumberRequested, economyRoomNumberRequested);
 
         return new IncomeCalculatorResultsDto(premiumRoomNumberRequested,
